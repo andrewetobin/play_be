@@ -3,6 +3,10 @@ const should = chai.should();
 const chaiHttp = require('chai-http');
 const server = require('../server');
 
+const environment = process.env.NODE_ENV || 'development';
+const configuration = require('../knexfile')[environment];
+const database = require('knex')(configuration);
+
 chai.use(chaiHttp);
 
 describe('Client Routes', () => {
@@ -21,11 +25,11 @@ describe('Client Routes', () => {
 describe('API Routes', () => {
   before((done) => {
     database.migrate.latest()
-      .then(() => done())
-      .catch(error => {
-        throw error;
-      });
-    });
+    .then(() => done())
+    .catch(error => {
+      throw error;
+   });
+  });
 
 
   beforeEach((done) => {
@@ -37,11 +41,6 @@ describe('API Routes', () => {
     });
 
     it('returns list of songs', () => {
-      
+
     })
 });
-
- //  after((done) => {
- // // or can put the first thing you do in the before block can be the
- // //db cleaner so that cleans every time
- //  });

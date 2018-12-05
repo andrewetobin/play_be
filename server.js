@@ -20,6 +20,3 @@ app.listen(app.get('port'), () => {
 });
 
 module.exports = app;
-module.exports = environment;
-module.exports = configuration;
-module.exports = database;
