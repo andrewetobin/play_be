@@ -13,19 +13,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Songs';
 
-app.get('/search', (request, response) => {
-  const artist = request.params.artist;
-  debugger;
-  const url = `https://api.musixmatch.com/ws/1.1/track.search?apikey=${myApiKey}&q_artist=${artist}`
-
-  fetch(url)
-    .then(response => response.json())
-    .then(songs => formatSongs(songs))
-    .catch(error => console.error({ error }));
-
-  const formatSongs = (songs) => {
-    console.log(songs);
-  };
+app.get('/', (request, response) => {
+  response.send("Play App");
 });
 
 app.listen(app.get('port'), () => {
