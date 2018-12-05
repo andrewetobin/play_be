@@ -9,9 +9,9 @@ exports.seed = function (knex, Promise) {
           .then(song1 => {
             return knex('songs').insert({ name: 'Another One Bites the Dust', artist_name: 'Queen', genre: 'Rock', song_rating: 85 }, 'id')
             .then(song2 => {
-              return knex('playlists').insert({name: 'Workout Songs'}, 'id')
+              return knex('playlists').insert({playlist_name: 'Workout Songs'}, 'id')
               .then(playlist1 => {
-                return knex('playlists').insert({name: 'Wedding Songs'}, 'id')
+                return knex('playlists').insert({playlist_name: 'Wedding Songs'}, 'id')
                 .then(playlist2 => {
                   return knex('playlistSongs').insert({song_id: song1[0], playlist_id: playlist1[0]})
                   .then(() => {
