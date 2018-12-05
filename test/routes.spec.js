@@ -10,35 +10,34 @@ const database = require('knex')(configuration);
 chai.use(chaiHttp);
 
 describe('Client Routes', () => {
-  it('doing a thing', done => {
+  it('should return list of songs', done => {
     chai.request(server)
-    .get('/')
+    .get('/search')
     .end((err, response) => {
       response.should.have.status(200);
-      response.should.be.html;
-      response.res.text.should.equal('Hello, Songs');
+      response.should.be.json;
+      response.res.text.should.equal({});
       done();
     });
   });
 });
 
 describe('API Routes', () => {
-  before((done) => {
-    database.migrate.latest()
-    .then(() => done())
-    .catch(error => {
-      throw error;
-   });
-  });
+  // before((done) => {
+  //   database.migrate.latest()
+  //   .then(() => done())
+  //   .catch(error => {
+  //     throw error;
+  //  });
+// });
 
-
-  beforeEach((done) => {
-    database.seed.run()
-      .then(() => done())
-      .catch(error => {
-        throw error;
-      });
-    });
+  // beforeEach((done) => {
+  //   database.seed.run()
+  //     .then(() => done())
+  //     .catch(error => {
+  //       throw error;
+  //     });
+  //   });
 
     it('returns list of songs', () => {
 
