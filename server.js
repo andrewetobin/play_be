@@ -18,3 +18,8 @@ app.get('/', (request, response) => {
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
+
+module.exports = app;
+module.exports = environment;
+module.exports = configuration;
+module.exports = database;
