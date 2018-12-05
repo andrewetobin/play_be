@@ -1,7 +1,7 @@
 {
   "name": "play_be",
   "version": "1.0.0",
-  "description": "",
+  "description": "Visit the deployed site here: https://play-be.herokuapp.com/",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,5 +12,14 @@
   "dependencies": {
     "knex": "^0.15.2",
     "pg": "^7.7.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewetobin/play_be.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andrewetobin/play_be/issues"
+  },
+  "homepage": "https://github.com/andrewetobin/play_be#readme"
 }
