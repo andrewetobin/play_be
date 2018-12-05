@@ -14,7 +14,11 @@
     "knex": "^0.15.2",
     "pg": "^7.7.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
+    "mocha": "^5.2.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/andrewetobin/play_be.git"
