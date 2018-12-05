@@ -4,6 +4,9 @@ module.exports = {
   development: {
     client: 'pg',
     connection: 'postgres://localhost/favorites',
+    migrations: {
+      directory: './db/migrations'
+    },
     useNullAsDefault: true
   },
 
