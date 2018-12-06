@@ -21,11 +21,21 @@ app.get('/api/v1/favorites', (request, response) => {
     });
 });
 
+app.get('/api/v1/songs/:id', (request, response) => {
+  const song_id = response.params.id;
+  database('songs')
+    .select('id', 'name', 'artist_name', 'genre', 'song_rating')
+    .where('id', song_id);
+    .then((song) => {
+      response.status(200).json(song);
+    })
+    .catch((error) => {
+      response.status(400).json({ error });
+    });
+});
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
 
 module.exports = app;
-
-
-
