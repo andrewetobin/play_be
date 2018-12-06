@@ -27,10 +27,16 @@ app.get('/api/v1/songs/:id', (request, response) => {
     .select('id', 'name', 'artist_name', 'genre', 'song_rating')
     .where('id', song_id)
     .then((song) => {
-      response.status(200).json(song);
+      if (song.length) {
+        response.status(200).json(song);
+      } else {
+        response.status(400).json({
+          error: `Could not find song with id: ${song_id}`
+        });
+      }
     })
     .catch((error) => {
-      response.status(400).json({ error });
+      response.status(500).json({ error });
     });
 });
 

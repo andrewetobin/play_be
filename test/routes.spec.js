@@ -57,5 +57,13 @@ describe('API Routes', () => {
         })
       }
     })
+    it('responds 400 when song not found', done => {
+      chai.request(server)
+      .get(`/api/v1/songs/1`)
+      .end((error, response) => {
+        response.should.have.status(400);
+        done();
+      })
+    })
   })
 })
