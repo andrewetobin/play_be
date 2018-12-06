@@ -11,8 +11,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Songs';
 
-app.get('/', (request, response) => {
-  response.send('Hello, Songs');
+app.get('/api/v1/favorites', (request, response) => {
+  database('songs').select('id', 'name', 'artist_name', 'genre', 'song_rating')
+    .then((songs) => {
+      response.status(200).json(songs);
+    })
+    .catch((error) => {
+      response.status(500).json({ error });
+    });
 });
 
 app.listen(app.get('port'), () => {
