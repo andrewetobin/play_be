@@ -41,5 +41,29 @@ describe('API Routes', () => {
           done()
         })
     })
-  });
-});
+  })
+  describe('/api/v1/songs/:id', () => {
+    it('responds to /api/v1/songs/:id', done => {
+      database('songs').select('*').then(data => resolve(data))
+      function resolve(song){
+        chai.request(server)
+        .get(`/api/v1/songs/${song[0].id}`)
+        .end((error, response) => {
+          response.should.have.status(200);
+          response.body.length.should.equal(1);
+          response.body[0].name.should.equal(song[0].name)
+          response.body[0].artist_name.should.equal(song[0].artist_name)
+          done();
+        })
+      }
+    })
+    it('responds 400 when song not found', done => {
+      chai.request(server)
+      .get(`/api/v1/songs/1`)
+      .end((error, response) => {
+        response.should.have.status(400);
+        done();
+      })
+    })
+  })
+})

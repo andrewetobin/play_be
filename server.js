@@ -21,11 +21,27 @@ app.get('/api/v1/favorites', (request, response) => {
     });
 });
 
+app.get('/api/v1/songs/:id', (request, response) => {
+  const song_id = request.params.id;
+  database('songs')
+    .select('id', 'name', 'artist_name', 'genre', 'song_rating')
+    .where('id', song_id)
+    .then((song) => {
+      if (song.length) {
+        response.status(200).json(song);
+      } else {
+        response.status(400).json({
+          error: `Could not find song with id: ${song_id}`
+        });
+      }
+    })
+    .catch((error) => {
+      response.status(500).json({ error });
+    });
+});
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
 
 module.exports = app;
-
-
-
