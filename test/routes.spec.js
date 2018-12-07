@@ -135,7 +135,7 @@ describe('API Routes', () => {
       });
     });
 
-    describe('PATCH /api/v1/songs:id', () => {
+    describe('PATCH /api/v1/songs/:id', () => {
       it('should edit the given song', (done) => {
         let testSongName;
         let testSongArtist;
@@ -143,10 +143,10 @@ describe('API Routes', () => {
           .then(song => updateSong(song))
 
         const updateSong = (song) => {
-          testSongName = song.name;
-          testSongArtist = song.artist_name;
+          testSongName = song[0].name;
+          testSongArtist = song[0].artist_name;
           chai.request(server)
-            .patch(`/api/v1/songs/${song.id}`)
+            .patch(`/api/v1/songs/${song[0].id}`)
             .send({
               name: 'New Song',
               artist_name: 'Queen',
@@ -154,7 +154,7 @@ describe('API Routes', () => {
               song_rating: 84
             })
             .end((err, response) => {
-              response.should.have.status(200);
+              response.should.have.status(201);
               response.body.should.be.a(Object);
               response.body.should.have.property('songs');
               response.body[0].should.have.property('name').eql('New Song');
