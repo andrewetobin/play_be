@@ -99,7 +99,7 @@ describe('API Routes', () => {
         .end((err, response) => {
           response.should.have.status(400);
           response.should.have.be.json;
-          response.body.error.should.equal('song_rating: 101 is invalid. song_rating must be an integer between 1 and 100.');
+          response.body.error.should.equal('Song Rating: 101 is invalid. Song rating must be an integer between 1 and 100.');
           done();
       });
     });
@@ -115,7 +115,7 @@ describe('API Routes', () => {
         .end((err, response) => {
           response.should.have.status(400);
           response.should.have.be.json;
-          response.body.error.should.equal('song_rating: -1 is invalid. song_rating must be an integer between 1 and 100.');
+          response.body.error.should.equal('Song Rating: -1 is invalid. Song rating must be an integer between 1 and 100.');
           done();
       });
     });
