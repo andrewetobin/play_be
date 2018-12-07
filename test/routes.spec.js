@@ -66,4 +66,44 @@ describe('API Routes', () => {
       })
     })
   })
+  describe('POST /api/v1/songs', () => {
+    it('should create a new song', done => {
+      chai.request(server)
+        .post('/api/v1/songs')
+        .send({
+          name: 'Under Pressure',
+          artist_name: "Queen",
+          genre: "Rock",
+          song_rating: 84
+        })
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.have.be.json;
+          response.body.should.be.a('object');
+          console.log(response.body.songs);
+          response.body.songs.should.have.property('name');
+          response.body.songs.should.have.property('id');
+          response.body.songs.should.have.property('genre');
+          response.body.songs['name'].should.equal('Under Pressure');
+          done();
+      });
+    });
+    it('should not create a song with rating out of range', done => {
+      chai.request(server)
+        .post('/api/v1/songs')
+        .send({
+          name: 'Under Pressure',
+          artist_name: "Queen",
+          genre: "Rock",
+          song_rating: 101
+        })
+        .end((err, response) => {
+          response.should.have.status(400);
+          response.should.have.be.json;
+          console.log(response.body.error);
+          response.body.error.should.equal('song_rating: 101 is invalid. song_rating must be an integer between 1 and 100.');
+          done();
+      });
+    });
+  });
 })
