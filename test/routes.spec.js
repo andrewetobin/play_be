@@ -88,7 +88,7 @@ describe('API Routes', () => {
           done();
       });
     });
-    it('should not create a song with rating out of range', done => {
+    it('should not create a song with rating above range', done => {
       chai.request(server)
         .post('/api/v1/songs')
         .send({
@@ -102,6 +102,23 @@ describe('API Routes', () => {
           response.should.have.be.json;
           console.log(response.body.error);
           response.body.error.should.equal('song_rating: 101 is invalid. song_rating must be an integer between 1 and 100.');
+          done();
+      });
+    });
+    it('should not create a song with rating below range', done => {
+      chai.request(server)
+        .post('/api/v1/songs')
+        .send({
+          name: 'Under Pressure',
+          artist_name: "Queen",
+          genre: "Rock",
+          song_rating: -1
+        })
+        .end((err, response) => {
+          response.should.have.status(400);
+          response.should.have.be.json;
+          console.log(response.body.error);
+          response.body.error.should.equal('song_rating: -1 is invalid. song_rating must be an integer between 1 and 100.');
           done();
       });
     });
