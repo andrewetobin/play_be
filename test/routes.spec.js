@@ -66,4 +66,73 @@ describe('API Routes', () => {
       })
     })
   })
+  describe('POST /api/v1/songs', () => {
+    it('should create a new song', done => {
+      chai.request(server)
+        .post('/api/v1/songs')
+        .send({
+          name: 'Under Pressure',
+          artist_name: "Queen",
+          genre: "Rock",
+          song_rating: 84
+        })
+        .end((err, response) => {
+          response.should.have.status(201);
+          response.should.have.be.json;
+          response.body.should.be.a('object');
+          response.body.songs.should.have.property('name');
+          response.body.songs.should.have.property('id');
+          response.body.songs.should.have.property('genre');
+          response.body.songs['name'].should.equal('Under Pressure');
+          done();
+      });
+    });
+    it('should not create a song with rating above range', done => {
+      chai.request(server)
+        .post('/api/v1/songs')
+        .send({
+          name: 'Under Pressure',
+          artist_name: "Queen",
+          genre: "Rock",
+          song_rating: 101
+        })
+        .end((err, response) => {
+          response.should.have.status(400);
+          response.should.have.be.json;
+          response.body.error.should.equal('song_rating: 101 is invalid. song_rating must be an integer between 1 and 100.');
+          done();
+      });
+    });
+    it('should not create a song with rating below range', done => {
+      chai.request(server)
+        .post('/api/v1/songs')
+        .send({
+          name: 'Under Pressure',
+          artist_name: "Queen",
+          genre: "Rock",
+          song_rating: -1
+        })
+        .end((err, response) => {
+          response.should.have.status(400);
+          response.should.have.be.json;
+          response.body.error.should.equal('song_rating: -1 is invalid. song_rating must be an integer between 1 and 100.');
+          done();
+      });
+    });
+    it('should not create a song with missing parameter', done => {
+      chai.request(server)
+        .post('/api/v1/songs')
+        .send({
+          artist_name: "Queen",
+          genre: "Rock",
+          song_rating: 84
+        })
+        .end((err, response) => {
+          response.should.have.status(400);
+          response.should.have.be.json;
+          response.body.error.should.equal('Expected format: { name: <String>, artist_name: <String>, genre: <String>, song_rating: <Integer> }. You\'re missing a "name" property.');
+          done();
+      });
+    });
+  });
 })

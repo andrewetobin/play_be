@@ -39,6 +39,32 @@ app.get('/api/v1/songs/:id', (request, response) => {
       response.status(500).json({ error });
     });
 });
+app.post('/api/v1/songs', (request, response) => {
+  const song = request.body;
+  const requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];
+
+  for (let parameter of requiredParameter) {
+    if (!song[parameter]) {
+      return response
+        .status(400)
+        .send({ error: `Expected format: { name: <String>, artist_name: <String>, genre: <String>, song_rating: <Integer> }. You're missing a "${parameter}" property.` });
+    }
+  }
+
+  if ((song['song_rating'] > 100) || (song['song_rating'] < 1)) {
+    return response
+      .status(400)
+      .send( {error: `Song Rating: ${song['song_rating']} is invalid. Song rating must be an integer between 1 and 100.` } );
+  }
+
+  database('songs').insert(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
+    .then(song => {
+      response.status(201).json({ songs: song[0] })
+    })
+    .catch(error => {
+      response.status(500).json({ error });
+    });
+});
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
