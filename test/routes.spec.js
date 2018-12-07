@@ -134,5 +134,35 @@ describe('API Routes', () => {
           done();
       });
     });
+
+    describe('PATCH /api/v1/songs:id', () => {
+      it('should edit the given song', (done) => {
+        let testSongName;
+        let testSongArtist;
+        database('songs').select().where('artist_name', 'Queen' ).limit(1)
+          .then(song => updateSong(song))
+
+        const updateSong = (song) => {
+          testSongName = song.name;
+          testSongArtist = song.artist_name;
+          chai.request(server)
+            .patch(`/api/v1/songs/${song.id}`)
+            .send({
+              name: 'New Song',
+              artist_name: 'Queen',
+              genre: "Rock",
+              song_rating: 84
+            })
+            .end((err, response) => {
+              response.should.have.status(200);
+              response.body.should.be.a(Object);
+              response.body.should.have.property('songs');
+              response.body[0].should.have.property('name').eql('New Song');
+              response.body[0].should.have.property('artist_name').eql('Queen');
+            })
+            done();
+        };
+      });
+    });
   });
-})
+});
