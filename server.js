@@ -94,19 +94,18 @@ app.get('/api/v1/playlists', (request, response) => {
   let playlists = []
   let songs = []
   database('playlists').select(['playlists.id', 'playlists.playlist_name'])
-  .then((a) => {
-    playlists = a
+  .then((allPlaylists) => {
+    playlists = allPlaylists
   })
   database("songs")
   .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
-  .join("playlist_songs", 'songs.id', '=', 'playlist_songs.song_id')
-  .then((a) => { songs = a })
-  .then(() => {
+  .join("playlist_songs", 'songs.id', 'playlist_songs.song_id')
+  .then((allSongs) => {
+    songs = allSongs;
     for(let playlist of playlists) {
       playlist.songs = songs.filter(song => (song.playlist_id == playlist.id))
       playlist.songs.forEach(song => delete song.playlist_id)
     }
-    console.log(playlists[0].songs[1].name);
   })
   .then(() => {response.status(200).json(playlists)})
   .catch((error) => {
