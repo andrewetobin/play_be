@@ -91,7 +91,7 @@ app.patch('/api/v1/songs/:id', (request, response) => {
     });
 });
 
-app.del('/api/v1/songs/:id', (request, response) => {
+app.delete('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
   database('songs').where('id', songId).del()
   .then(() =>  response.status(204))
