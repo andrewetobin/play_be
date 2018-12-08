@@ -106,6 +106,7 @@ app.get('/api/v1/playlists', (request, response) => {
       playlist.songs = songs.filter(song => (song.playlist_id == playlist.id))
       playlist.songs.forEach(song => delete song.playlist_id)
     }
+    console.log(playlists[0].songs[1].name);
   })
   .then(() => {response.status(200).json(playlists)})
   .catch((error) => {

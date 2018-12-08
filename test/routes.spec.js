@@ -173,8 +173,17 @@ describe('API Routes', () => {
         .end((err, response) => {
           response.should.have.status(200);
           response.should.be.json;
-          response.body[0].playlist_name.should.equal("Workout Songs")
-          response.body[1].playlist_name.should.equal("Wedding Songs")
+          response.body[0].playlist_name.should.equal("Workout Songs");
+          response.body[0].songs[0].name.should.equal("Bohemian Rhapsody");
+          response.body[0].songs[0].artist_name.should.equal("Queen");
+          response.body[0].songs[0].genre.should.equal("Rock");
+          response.body[0].songs[0].song_rating.should.equal(100);
+          response.body[0].songs[1].name.should.equal("Another One Bites the Dust");
+          response.body[1].playlist_name.should.equal("Wedding Songs");
+          response.body[0].songs[0].should.have.property('name');
+          response.body[0].songs[0].should.have.property('artist_name');
+          response.body[0].songs[0].should.have.property('genre');
+          response.body[0].songs[0].should.have.property('song_rating');
         })
         done();
     })
