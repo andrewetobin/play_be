@@ -195,11 +195,10 @@ describe('API Routes', () => {
 
     it('should return 404 if song not in db', done => {
       let testSongId;
-      database('songs').select('*')
-        .then(songs => {
-          testSongId = songs[0].id;
+      database('songs').first('id')
+        .then(song => {
           chai.request(server)
-            .delete(`api/v1/songs/${testSongId + 5}`)
+            .delete(`/api/v1/songs/${song.id + 3}`)
             .end((err, response) => {
               response.should.have.status(404);
         });
