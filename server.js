@@ -70,6 +70,7 @@ app.post('/api/v1/songs', (request, response) => {
 
 app.patch('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
+  const song = request.body;
   const requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];
 
   for(let parameter of requiredParameter) {

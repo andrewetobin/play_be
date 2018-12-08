@@ -20,10 +20,12 @@ exports.up = function(knex, Promise) {
       table.increments('id').primary();
       table.integer('song_id').unsigned()
       table.foreign('song_id')
-        .references('songs.id');
+        .references('songs.id')
+        .onDelete('CASCADE');
       table.integer('playlist_id').unsigned()
       table.foreign('playlist_id')
-        .references('playlists.id');
+        .references('playlists.id')
+        .onDelete('CASCADE');
 
       table.timestamps(true, true);
     })
@@ -33,8 +35,8 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return Promise.all([
+    knex.schema.dropTable('playlist_songs'),
     knex.schema.dropTable('songs'),
-    knex.schema.dropTable('playlists'),
-    knex.schema.dropTable('playlistSongs')
+    knex.schema.dropTable('playlists')
   ]);
 }
