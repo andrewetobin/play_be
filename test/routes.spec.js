@@ -136,7 +136,7 @@ describe('API Routes', () => {
     });
 
     describe('PATCH /api/v1/songs/:id', () => {
-      it('should edit the given song', (done) => {
+      xit('should edit the given song', (done) => {
         let testSongName;
         let testSongArtist;
         database('songs').select().where('artist_name', 'Queen' ).limit(1)
@@ -180,4 +180,3 @@ describe('API Routes', () => {
     })
   })
 })
-});
