@@ -91,6 +91,14 @@ app.patch('/api/v1/songs/:id', (request, response) => {
     });
 });
 
+app.del('/api/v1/songs/:id', (request, response) => {
+  const songId = request.params.id;
+  database('songs').where('id', songId).del()
+  .then(() =>  response.status(204))
+  .catch(error => ({ error }))
+
+});
+
 app.get('/api/v1/playlists', (request, response) => {
   database('playlistSongs').select('playlist_id', 'playlist_name', 'songs')
     .then((playlists) => {
