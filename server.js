@@ -68,6 +68,14 @@ app.post('/api/v1/songs', (request, response) => {
     });
 });
 
+
+app.get('/api/v1/playlists', (request, response) => {
+  database('playlists').select('playlist_name')
+    .then((songs) => {
+      response.status(200).json(songs);
+    })
+    .catch((error) => {
+
 app.patch('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
   const requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];

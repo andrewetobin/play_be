@@ -165,6 +165,7 @@ describe('API Routes', () => {
       });
     });
   });
+
   describe('/api/v1/playlists', () => {
     it("getting response from api/v1/playlists", done => {
       chai.request(server)
@@ -179,3 +180,4 @@ describe('API Routes', () => {
     })
   })
 })
+});
