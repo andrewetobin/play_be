@@ -94,9 +94,8 @@ app.patch('/api/v1/songs/:id', (request, response) => {
 app.delete('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
   database('songs').where('id', songId).del()
-  .then(() =>  response.status(204))
-  .catch(error => ({ error }))
-
+    .then(() =>  {response.status(204)})
+    .catch(error => {response.status(400).json({error})})
 });
 
 app.get('/api/v1/playlists', (request, response) => {

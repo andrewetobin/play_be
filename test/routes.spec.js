@@ -174,25 +174,25 @@ describe('API Routes', () => {
     });
 
 
-  // describe('DELETE /api/v1/songs/:id', () => {
-  //   it('should successfully delete specified song', done => {
-  //     database('songs').select('*')
-  //       .then(songs => {
-  //         const lengthBeforeDelete = songs.length;
-  //         const song = songs[0];
-  //         chai.request(server)
-  //           .del(`/api/v1/songs/${song.id}`)
-  //           .end((err, response) => {
-  //             response.should.have.status(204);
-  //           })
-  //         database('songs').select('*')
-  //           .then(updatedSongs => {
-  //             updatedSongs.length.should.eql(lengthBeforeDelete - 1);
-  //           })
-  //           done();
-  //         });
-  //   });
-  // });
+  describe('DELETE /api/v1/songs/:id', () => {
+    it('should successfully delete specified song', done => {
+      database('songs').select('*')
+        .then(songs => {
+          const lengthBeforeDelete = songs.length;
+          const song = songs[0];
+          chai.request(server)
+            .del(`/api/v1/songs/${song.id}`)
+            .end((err, response) => {
+              response.should.have.status(204);
+          database('songs').select('*')
+            .then(updatedSongs => {
+              updatedSongs.length.should.equal(lengthBeforeDelete - 1);
+            });
+          });
+          done();
+        });
+    });
+  });
 
   describe('/api/v1/playlists', () => {
     it("getting response from api/v1/playlists", done => {
