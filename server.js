@@ -96,10 +96,11 @@ app.delete('/api/v1/songs/:id', (request, response) => {
 
   database('songs').pluck('id')
     .then(idSet => {
+      console.log(typeof idSet[0])
       if (idSet.includes(parseInt(songId))) {
         database('songs').where('id', songId).del()
           .then(() => {
-            response.status(204)
+            response.status(204).json({success: 'Song has been deleted.'})
           })
           .catch(error => ({ error }));
       } else {

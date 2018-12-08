@@ -181,7 +181,7 @@ describe('API Routes', () => {
           const lengthBeforeDelete = songs.length;
           const song = songs[0];
           chai.request(server)
-            .del(`/api/v1/songs/${song.id}`)
+            .delete(`/api/v1/songs/${song.id}`)
             .end((err, response) => {
               response.should.have.status(204);
           database('songs').select('*')
@@ -199,11 +199,12 @@ describe('API Routes', () => {
         .then(songs => {
           testSongId = songs[0].id;
           chai.request(server)
-            .del(`api/v1/songs/${testSongId + 5}`)
+            .delete(`api/v1/songs/${testSongId + 5}`)
             .end((err, response) => {
               response.should.have.status(404);
         });
       });
+      done();
     });
   });
 
