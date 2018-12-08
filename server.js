@@ -91,9 +91,9 @@ app.patch('/api/v1/songs/:id', (request, response) => {
 });
 
 app.get('/api/v1/playlists', (request, response) => {
-  database('playlists').select('playlist_name')
-    .then((songs) => {
-      response.status(200).json(songs);
+  database('playlistSongs').select('playlist_id', 'playlist_name', 'songs')
+    .then((playlists) => {
+      response.status(200).json(playlists);
     })
     .catch((error) => {
       response.status(500).json({ error });

@@ -16,7 +16,7 @@ exports.up = function(knex, Promise) {
       table.timestamps(true, true);
     }),
 
-    knex.schema.createTable('playlistSongs', function(table) {
+    knex.schema.createTable('playlist_songs', function(table) {
       table.increments('id').primary();
       table.integer('song_id').unsigned()
       table.foreign('song_id')

@@ -1,6 +1,6 @@
 
 exports.seed = function (knex, Promise) {
-  return knex('playlistSongs').del()
+  return knex('playlist_songs').del()
     .then(() => knex('playlists').del())
     .then(() => knex('songs').del())
     .then(() => {
@@ -13,11 +13,11 @@ exports.seed = function (knex, Promise) {
               .then(playlist1 => {
                 return knex('playlists').insert({playlist_name: 'Wedding Songs'}, 'id')
                 .then(playlist2 => {
-                  return knex('playlistSongs').insert({song_id: song1[0], playlist_id: playlist1[0]})
+                  return knex('playlist_songs').insert({song_id: song1[0], playlist_id: playlist1[0]})
                   .then(() => {
-                    return knex('playlistSongs').insert({song_id: song2[0], playlist_id: playlist2[0]})
+                    return knex('playlist_songs').insert({song_id: song2[0], playlist_id: playlist2[0]})
                     .then(() => {
-                      return knex('playlistSongs').insert({song_id: song2[0], playlist_id: playlist1[0]})
+                      return knex('playlist_songs').insert({song_id: song2[0], playlist_id: playlist1[0]})
                     })
                   })
                 })
