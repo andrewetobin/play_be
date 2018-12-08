@@ -24,16 +24,16 @@ app.get('/api/v1/favorites', (request, response) => {
 });
 
 app.get('/api/v1/songs/:id', (request, response) => {
-  const song_id = request.params.id;
+  const songId = request.params.id;
   database('songs')
     .select('id', 'name', 'artist_name', 'genre', 'song_rating')
-    .where('id', song_id)
+    .where('id', songId)
     .then((song) => {
       if (song.length) {
         response.status(200).json(song);
       } else {
         response.status(400).json({
-          error: `Could not find song with id: ${song_id}`
+          error: `Could not find song with id: ${songId}`
         });
       }
     })
