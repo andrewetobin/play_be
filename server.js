@@ -97,9 +97,9 @@ app.get('/api/v1/playlists', (request, response) => {
   .then((allPlaylists) => {
     playlists = allPlaylists
   })
-  database("songs")
+  database('songs')
   .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
-  .join("playlist_songs", 'songs.id', 'playlist_songs.song_id')
+  .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')
   .then((allSongs) => {
     songs = allSongs;
     for(let playlist of playlists) {
