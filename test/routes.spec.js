@@ -13,11 +13,12 @@ chai.use(chaiHttp);
 
 describe('API Routes', () => {
   before((done => {
-    database.migrate.latest()
-      .then( () => done())
-      .catch(error => {
-        throw error;
-      });
+    database.migrate.rollback()
+    .then(() => database.migrate.latest())
+    .then( () => done())
+    .catch(error => {
+      throw error;
+    });
   }));
 
   beforeEach((done) => {
