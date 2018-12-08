@@ -1,3 +1,5 @@
+const pry = require('pryjs')
+
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
@@ -11,11 +13,12 @@ chai.use(chaiHttp);
 
 describe('API Routes', () => {
   before((done => {
-    database.migrate.latest()
-      .then( () => done())
-      .catch(error => {
-        throw error;
-      });
+    database.migrate.rollback()
+    .then(() => database.migrate.latest())
+    .then( () => done())
+    .catch(error => {
+      throw error;
+    });
   }));
 
   beforeEach((done) => {
@@ -135,39 +138,41 @@ describe('API Routes', () => {
       });
     });
 
-    describe('PATCH /api/v1/songs/:id', () => {
-      xit('should edit the given song', (done) => {
-        let testSongName;
-        let testSongArtist;
-        database('songs').select().where('artist_name', 'Queen' ).limit(1)
-          .then(song => updateSong(song))
 
-        const updateSong = (song) => {
-          testSongName = song[0].name;
-          testSongArtist = song[0].artist_name;
-          chai.request(server)
-            .patch(`/api/v1/songs/${song[0].id}`)
-            .send({
-              name: 'New Song',
-              artist_name: 'Queen',
-              genre: "Rock",
-              song_rating: 84
-            })
-            .end((err, response) => {
-              response.should.have.status(201);
-              response.body.should.be.a(Object);
-              response.body.should.have.property('songs');
-              response.body[0].should.have.property('name').eql('New Song');
-              response.body[0].should.have.property('artist_name').eql('Queen');
-            })
-            done();
+  describe('PATCH /api/v1/songs/:id', () => {
+    it('should edit the given song', (done) => {
+      let testSongName;
+      let testSongArtist;
+      database('songs').select().where('artist_name', 'Queen' ).limit(1)
+        .then(song => updateSong(song))
+
+
+      const updateSong = (song) => {
+        testSongName = song[0].name;
+        testSongArtist = song[0].artist_name;
+        chai.request(server)
+          .patch(`/api/v1/songs/${song[0].id}`)
+          .send({
+            name: 'New Song',
+            artist_name: 'Queen',
+            genre: "Rock",
+            song_rating: 84
+          })
+          .end((err, response) => {
+            response.should.have.status(201);
+            response.body.should.be.a(Object);
+            response.body.should.have.property('songs');
+            response.body[0].should.have.property('name').eql('New Song');
+            response.body[0].should.have.property('artist_name').eql('Queen');
+          })
+          done();
         };
       });
     });
   });
 
   describe('/api/v1/playlists', () => {
-    it("getting response from api/v1/playlists", done => {
+    xit("getting response from api/v1/playlists", done => {
       chai.request(server)
         .get("/api/v1/playlists")
         .end((err, response) => {
@@ -189,3 +194,4 @@ describe('API Routes', () => {
     })
   })
 })
+
