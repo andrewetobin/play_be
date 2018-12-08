@@ -93,10 +93,24 @@ app.patch('/api/v1/songs/:id', (request, response) => {
 
 app.delete('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
-  database('songs').where('id', songId).del()
-    .then(() =>  {response.status(204)})
-    .catch(error => {response.status(400).json({error})})
+
+  database('songs').pluck('id')
+    .then(idSet => {
+      if (idSet.includes(parseInt(songId))) {
+        database('songs').where('id', songId).del()
+          .then(() => {
+            response.status(204)
+          })
+          .catch(error => ({ error }));
+      } else {
+        response.status(404).json({error: 'Cound not find song.'});
+      };
+    })
+    .catch((error) => {
+    response.status(500).json({ error });
+  });
 });
+
 
 app.get('/api/v1/playlists', (request, response) => {
   let playlists = []

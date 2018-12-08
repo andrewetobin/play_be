@@ -192,6 +192,19 @@ describe('API Routes', () => {
           done();
         });
     });
+
+    it('should return 404 if song not in db', done => {
+      let testSongId;
+      database('songs').select('*')
+        .then(songs => {
+          testSongId = songs[0].id;
+          chai.request(server)
+            .del(`api/v1/songs/${testSongId + 5}`)
+            .end((err, response) => {
+              response.should.have.status(404);
+        });
+      });
+    });
   });
 
   describe('/api/v1/playlists', () => {
