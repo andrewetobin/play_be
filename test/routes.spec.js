@@ -172,10 +172,11 @@ describe('API Routes', () => {
   });
 
   describe('/api/v1/playlists', () => {
-    it("getting response from api/v1/playlists", done => {
+    xit("getting response from api/v1/playlists", done => {
       chai.request(server)
         .get("/api/v1/playlists")
         .end((err, response) => {
+          console.log(response.body);
           response.should.have.status(200);
           response.should.be.json;
           response.body[0].playlist_name.should.equal("Workout Songs");
@@ -189,8 +190,29 @@ describe('API Routes', () => {
           response.body[0].songs[0].should.have.property('artist_name');
           response.body[0].songs[0].should.have.property('genre');
           response.body[0].songs[0].should.have.property('song_rating');
-        })
+        });
         done();
+    });
+  });
+  describe('/api/v1/playlists/:playlist_id/songs', () => {
+    it("getting response from /api/v1/playlists/:playlist_id/songs", done => {
+      database('playlists').select('*').then(data => resolve(data))
+      function resolve(playlist){
+        chai.request(server)
+        .get(`/api/v1/playlists/${playlist[0].id}/songs`)
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.should.be.json;
+          response.body[0].playlist_name.should.equal("Workout Songs");
+          response.body[0].songs.length.should.equal(2);
+          response.body[0].songs[1].name.should.equal("Another One Bites the Dust");
+          response.body[0].songs[1].should.have.property('name');
+          response.body[0].songs[1].should.have.property('artist_name');
+          response.body[0].songs[1].should.have.property('genre');
+          response.body[0].songs[1].should.have.property('song_rating');
+          done();
+        });
+      };
     })
-  })
-})
+  });
+});
