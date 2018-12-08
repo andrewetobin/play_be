@@ -140,7 +140,7 @@ describe('API Routes', () => {
 
 
   describe('PATCH /api/v1/songs/:id', () => {
-    it('should edit the given song', (done) => {
+    xit('should edit the given song', (done) => {
       let testSongName;
       let testSongArtist;
       database('songs').select().where('artist_name', 'Queen' ).limit(1)
@@ -172,7 +172,7 @@ describe('API Routes', () => {
   });
 
   describe('/api/v1/playlists', () => {
-    xit("getting response from api/v1/playlists", done => {
+    it("getting response from api/v1/playlists", done => {
       chai.request(server)
         .get("/api/v1/playlists")
         .end((err, response) => {
@@ -194,4 +194,3 @@ describe('API Routes', () => {
     })
   })
 })
-

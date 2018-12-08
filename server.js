@@ -92,8 +92,8 @@ app.patch('/api/v1/songs/:id', (request, response) => {
 });
 
 app.get('/api/v1/playlists', (request, response) => {
-  let playlists = []
-  let songs = []
+  let playlists = [];
+  let songs = [];
   database('playlists').select(['playlists.id', 'playlists.playlist_name'])
   .then((allPlaylists) => {
     playlists = allPlaylists
@@ -103,10 +103,7 @@ app.get('/api/v1/playlists', (request, response) => {
   .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')
   .then((allSongs) => {
     songs = allSongs;
-    for(let playlist of playlists) {
-      playlist.songs = songs.filter(song => (song.playlist_id == playlist.id))
-      playlist.songs.forEach(song => delete song.playlist_id)
-    }
+    addSongsToPlaylists(songs, playlists);
   })
   .then(() => {response.status(200).json(playlists)})
   .catch((error) => {
@@ -114,9 +111,38 @@ app.get('/api/v1/playlists', (request, response) => {
   });
 });
 
+app.get('/api/v1/playlists/:playlist_id/songs', (request, response) => {
+  let playlistId = request.params.playlist_id
+  let playlists = []
+  let songs = []
+  database('playlists').select(['playlists.id', 'playlists.playlist_name'])
+  .where('playlists.id', playlistId)
+  .then((foundPlaylist) => {
+    playlists = foundPlaylist
+  })
+
+  database("songs")
+  .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
+  .join("playlist_songs", 'songs.id', '=', 'playlist_songs.song_id')
+  .then((allSongs) => {
+    songs = allSongs;
+    addSongsToPlaylists(songs, playlists);
+  })
+  .then(() => {response.status(200).json(playlists)})
+  .catch((error) => {
+    response.status(500).json({ error });
+  });
+});
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
 
 module.exports = app;
+
+const addSongsToPlaylists = (songs, playlists) => {
+  for(let playlist of playlists) {
+    playlist.songs = songs.filter(song => (song.playlist_id == playlist.id))
+    playlist.songs.forEach(song => delete song.playlist_id)
+  };
+};
