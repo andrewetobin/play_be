@@ -1,3 +1,5 @@
+const pry = require('pryjs')
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -66,12 +68,32 @@ app.post('/api/v1/songs', (request, response) => {
     });
 });
 
+
 app.get('/api/v1/playlists', (request, response) => {
   database('playlists').select('playlist_name')
     .then((songs) => {
       response.status(200).json(songs);
     })
     .catch((error) => {
+
+app.patch('/api/v1/songs/:id', (request, response) => {
+  const songId = request.params.id;
+  const requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];
+
+  for(let parameter of requiredParameter) {
+    if(!song[parameter]) {
+      return response
+        .status(400)
+        .send({ error: `Expected format: { name: <String>, artist_name: <String>, genre: <String>, song_rating: <Integer> }.
+          You're missing a "${requiredParameter}" property.`});
+    }
+  }
+
+  database('songs').where('id', songId).update(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
+    .then(song => {
+      response.status(201).json({ songs: song[0] });
+    })
+    .catch(error => {
       response.status(500).json({ error });
     });
 });
