@@ -147,7 +147,7 @@ describe('API Routes', () => {
 
 
   describe('PATCH /api/v1/songs/:id', () => {
-    xit('should edit the given song', (done) => {
+    it('should edit the given song', (done) => {
       let testSongName;
       let testSongArtist;
       database('songs').select().where('artist_name', 'Queen').limit(1)
@@ -187,7 +187,8 @@ describe('API Routes', () => {
               response.should.have.status(204);
           database('songs').select('*')
             .then(updatedSongs => {
-              updatedSongs.length.should.equal(lengthBeforeDelete - 1);
+              let updatedLength = updatedSongs.length;
+              updatedLength.should.equal(lengthBeforeDelete - 1);
             });
           });
           done();
