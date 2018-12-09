@@ -163,10 +163,10 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let targetSong;
   let targetPlaylist;
 
-  database('songs').select('name').where('id', request.params.id)
+  database('songs').select('*').where('id', request.params.id)
     .then(song => {
       if (song.length) {
-        targetSong = song;
+        targetSong = song[0];
       } else {
         response.status(404).json({
           message: `Could not find song.`
@@ -175,10 +175,10 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
     })
     .catch(error => ({ error }));
 
-  database('playlists').select('name').where('id', request.params.playlist_id)
+  database('playlists').select('*').where('id', request.params.playlist_id)
     .then(playlist => {
       if(playlist.length) {
-        targetPlalist = playlist;
+        targetPlaylist = playlist[0];
       } else {
         response.status(404).json({
           message: `Could not find playlist.`
