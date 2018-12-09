@@ -137,6 +137,22 @@ app.get('/api/v1/playlists', (request, response) => {
     response.status(500).json({ error });
   });
 });
+
+app.post('/api/v1/playlists', (request, response) => {
+  const newPlaylist = request.body;
+
+  if(!newPlaylist['playlist_name']) {
+    return response
+      .status(400)
+      .send({ error: `Expected format: { playlist_name: <String> }.` });
+  }
+
+  database('playlists').insert(newPlaylist, ['id', 'playlist_name'])
+    .then(addedPlaylist => {
+      response.status(201).json({ playlist: addedPlaylist[0] })
+    });
+});
+
 app.get('/api/v1/playlists/:id/songs', (request, response) => {
   let playlistResponse;
   let playlistId = request.params.id;
