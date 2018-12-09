@@ -265,4 +265,41 @@ describe('API Routes', () => {
       done();
     })
   });
+
+  describe('POST /api/v1/playlists/:playlist_id/songs/:id', () =>{
+    it('should add the given song to the given playlist', done => {
+      let newSongParams = {
+        name: "New Song 123",
+        artist_name: "Kandrew",
+        genre: "Coding Rock",
+        song_rating: 99
+      };
+
+      let testPlaylist;
+      database('playlists').first()
+        .then(playlist => { playlist = testPlaylist});
+
+      database('songs').insert(newSongParams)
+        .then(newSong => {
+          chai.request(server)
+          .post(`/api/v1/playlists/${testPlaylist.id}/songs}`)
+          .send({
+            playlist_id: testPlaylist.id,
+            song_id: newSong.id
+          })
+          .end((err, response) => {
+            response.should.have.status(201);
+            response.body.should.be(`message: Successfully added ${newSongParams.name}
+              to playlist ${playlist.name}`);
+
+            database('playlist_songs').select('*').orderBy('created_at desc').limit(1)
+            .then(playlistSongEntry => {
+              playlistSongEntry.playlist_id.should.equal(testPlaylist.id);
+              playlistSongEntry.song_id.should.equal(newSong.id);
+            });
+            done();
+          });
+        });
+    });
+  });
 });
