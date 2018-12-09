@@ -267,7 +267,7 @@ describe('API Routes', () => {
     })
   });
 
-  describe('POST /api/v1/playlists/:playlist_id/songs/:id', () =>{
+  describe('POST /api/v1/playlists/:playlist_id/songs/:id', () => {
     it('should add the given song to the given playlist', done => {
       let newSongParams = {
         name: "New Song 123",
@@ -275,7 +275,6 @@ describe('API Routes', () => {
         genre: "Coding Rock",
         song_rating: 99
       };
-
       let testPlaylist;
       database('playlists').first()
         .then(playlist => { testPlaylist = Object.assign(playlist)} );
@@ -283,10 +282,6 @@ describe('API Routes', () => {
         .then(newSongId => {
           chai.request(server)
           .post(`/api/v1/playlists/${testPlaylist.id}/songs/${newSongId[0]}`)
-          .send({
-            playlist_id: testPlaylist.id,
-            song_id: newSongId
-          })
           .end((err, response) => {
             response.should.have.status(201);
             response.body.should.be(`message: Successfully added ${newSongParams.name}
