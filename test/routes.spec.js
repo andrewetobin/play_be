@@ -284,16 +284,14 @@ describe('API Routes', () => {
           .post(`/api/v1/playlists/${testPlaylist.id}/songs/${newSongId[0]}`)
           .end((err, response) => {
             response.should.have.status(201);
-            response.body.should.be(`message: Successfully added ${newSongParams.name}
-              to playlist ${playlist.name}`);
-
+            response.body.message.should.equal(`Successfully added ${newSongParams.name} to playlist: ${testPlaylist.playlist_name}`);
             database('playlist_songs').select('*').orderBy('created_at desc').limit(1)
             .then(playlistSongEntry => {
               playlistSongEntry.playlist_id.should.equal(testPlaylist.id);
               playlistSongEntry.song_id.should.equal(newSong.id);
             });
+            done();
           });
-          done();
         });
     });
   });

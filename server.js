@@ -163,9 +163,8 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let targetSong;
   let targetPlaylist;
 
-  database('songs').select('id', 'name').where('id', request.params.id)
+  Promise.all([database('songs').select('id', 'name').where('id', request.params.id)
     .then(song => {
-      eval(pry.it)
       if (song.length) {
         targetSong = song[0];
       } else {
@@ -174,7 +173,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
         });
       };
     })
-    .catch(error => ({ error }));
+    .catch(error => ({ error })),
 
   database('playlists').select('id', 'playlist_name').where('id', request.params.playlist_id)
     .then(playlist => {
@@ -186,23 +185,26 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
         });
       };
     })
-    .catch(error => ({ error }));
-
-  if (targetSong && targetPlaylist) {
-    let newPlaylistSong = {
-      playlist_id: targetPlaylist.id,
-      song_id: targetSong.id
+    .catch(error => ({ error }))])
+  .then(() => {
+    if (targetSong && targetPlaylist) {
+      let newPlaylistSong = {
+        playlist_id: targetPlaylist.id,
+        song_id: targetSong.id
+      };
+      database('playlist_songs').insert(newPlaylistSong)
+        .then(() => {
+          response.status(201).json({
+            message: `Successfully added ${targetSong.name} to playlist: ${targetPlaylist.playlist_name}`
+          });
+        })
+        .catch(error => { error });
+    } else {
+      response.status(400).json({
+        error: 'Something didn\' go right, please try again.'
+      });
     };
-
-    database('playlist_songs').insert(newPlaylistSong)
-      .then(() => {
-        response.status(201).json({
-          message: `Successfully added ${targetSong.name}
-            to playlist ${targetPlaylist.name}`
-        });
-      })
-      .catch(error => { error });
-  };
+  });
 });
 
 app.listen(app.get('port'), () => {
