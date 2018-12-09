@@ -285,5 +285,20 @@ describe('API Routes', () => {
         done();
       });
     });
+    it('doesnt create playlist if field is empty', done => {
+      chai.request(server)
+      .post('/api/v1/playlists')
+      .send({
+        playlist_name: ''
+      })
+      .end((err, response) => {
+        response.should.have.status(400);
+        response.should.have.be.json;
+        response.body.should.be.a('object');
+        response.body.should.have.property('error');
+        response.body.error.should.equal('Expected format: { playlist_name: <String> }.');
+        done();
+      });
+    });
   });
 });
