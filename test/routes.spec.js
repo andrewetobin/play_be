@@ -332,4 +332,35 @@ describe('API Routes', () => {
       });
     });
   });
+
+  describe('DELETE /api/v1/playlists/:playlist_id/songs/:id', () => {
+    it('should delete song from playlist', done => {
+      let testSongId;
+      let testPlaylistId;
+      let testSong;
+      let testPlaylist;
+      database('playlist_songs').select('*').first()
+        .then(playlistSong => {
+          testSongId = playlistSong.song_id;
+          testPlaylistId = playlistSong.playlist_id;
+        })
+        .then(() => {
+          database('songs').select('name').where('id', testSongId)
+          .then(song => {testSong = song})
+        })
+        .then(() => {
+          database('playlists').select('playlist_name').where('id', testPlaylistId)
+          .then(playlist => {testPlaylist = playlist})
+        })
+        .then(() => {
+          chai.request(server)
+          .delete(`/api/v1/playlists/${testPlaylistId}/songs/${testSongId}`)
+          .end((err, response) => {
+            response.should.have.status(201);
+            response.body.message.should.equal(`Successfully removed ${testSong.name} from playlist: ${testPlaylist.playlist_name}.`)
+            done();
+          });
+        });
+    });
+  });
 });
