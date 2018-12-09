@@ -165,6 +165,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
 
   database('songs').select('id', 'name').where('id', request.params.id)
     .then(song => {
+      eval(pry.it)
       if (song.length) {
         targetSong = song[0];
       } else {
@@ -175,7 +176,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
     })
     .catch(error => ({ error }));
 
-  database('playlists').select('id', 'name').where('id', request.params.playlist_id)
+  database('playlists').select('id', 'playlist_name').where('id', request.params.playlist_id)
     .then(playlist => {
       if(playlist.length) {
         targetPlaylist = playlist[0];
