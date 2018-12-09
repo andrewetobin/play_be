@@ -41,6 +41,7 @@ app.get('/api/v1/songs/:id', (request, response) => {
       response.status(500).json({ error });
     });
 });
+
 app.post('/api/v1/songs', (request, response) => {
   const song = request.body;
   const requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];
@@ -111,7 +112,6 @@ app.delete('/api/v1/songs/:id', (request, response) => {
   });
 });
 
-
 app.get('/api/v1/playlists', (request, response) => {
   let playlists = [];
   let songs = [];
@@ -137,6 +137,7 @@ app.get('/api/v1/playlists', (request, response) => {
     response.status(500).json({ error });
   });
 });
+
 app.get('/api/v1/playlists/:id/songs', (request, response) => {
   let playlistResponse;
   let playlistId = request.params.id;
@@ -156,6 +157,51 @@ app.get('/api/v1/playlists/:id/songs', (request, response) => {
       response.status(404).json({ error: `Playlist with ID: ${playlistId} does not exist` });
     };
   });
+});
+
+app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
+  let targetSong;
+  let targetPlaylist;
+
+  database('songs').select('name').where('id', request.params.id)
+    .then(song => {
+      if (song.length) {
+        targetSong = song;
+      } else {
+        response.status(404).json({
+          message: `Could not find song.`
+        });
+      };
+    })
+    .catch(error => ({ error }));
+
+  database('playlists').select('name').where('id', request.params.playlist_id)
+    .then(playlist => {
+      if(playlist.length) {
+        targetPlalist = playlist;
+      } else {
+        response.status(404).json({
+          message: `Could not find playlist.`
+        });
+      };
+    })
+    .catch(error => ({ error }));
+
+  if (targetSong && targetPlaylist) {
+    let newPlaylistSong = {
+      playlist_id: targetPlaylist.id,
+      song_id: targetSong.id
+    };
+
+    database('playlist_songs').insert(newPlaylistSong)
+      .then(() => {
+        response.status(201).json({
+          message: `Successfully added ${targetSong.name}
+            to playlist ${targetPlaylist.name}`
+        });
+      })
+      .catch(error => { error });
+  };
 });
 
 app.listen(app.get('port'), () => {

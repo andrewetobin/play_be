@@ -277,15 +277,14 @@ describe('API Routes', () => {
 
       let testPlaylist;
       database('playlists').first()
-        .then(playlist => { playlist = testPlaylist});
-
-      database('songs').insert(newSongParams)
-        .then(newSong => {
+        .then(playlist => { testPlaylist = Object.assign(playlist)} );
+      database('songs').insert(newSongParams, 'id')
+        .then(newSongId => {
           chai.request(server)
-          .post(`/api/v1/playlists/${testPlaylist.id}/songs}`)
+          .post(`/api/v1/playlists/${testPlaylist.id}/songs/${newSongId[0]}`)
           .send({
             playlist_id: testPlaylist.id,
-            song_id: newSong.id
+            song_id: newSongId
           })
           .end((err, response) => {
             response.should.have.status(201);
@@ -297,8 +296,8 @@ describe('API Routes', () => {
               playlistSongEntry.playlist_id.should.equal(testPlaylist.id);
               playlistSongEntry.song_id.should.equal(newSong.id);
             });
-            done();
           });
+          done();
         });
     });
   });
