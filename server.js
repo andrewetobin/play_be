@@ -216,7 +216,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
         .catch(error => { error });
     } else {
       response.status(400).json({
-        error: 'Something didn\' go right, please try again.'
+        error: 'Something didn\'t go right, please try again.'
       });
     };
   });
