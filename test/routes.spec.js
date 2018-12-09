@@ -187,7 +187,8 @@ describe('API Routes', () => {
               response.should.have.status(204);
           database('songs').select('*')
             .then(updatedSongs => {
-              updatedSongs.length.should.equal(lengthBeforeDelete - 1);
+              let updatedLength = updatedSongs.length;
+              updatedLength.should.equal(lengthBeforeDelete - 1);
             });
           });
           done();
@@ -266,6 +267,32 @@ describe('API Routes', () => {
     })
   });
 
+  describe('POST /api/v1/playlists/:playlist_id/songs/:id', () => {
+    it('should add the given song to the given playlist', done => {
+      let newSongParams = {
+        name: "New Song 123",
+        artist_name: "Kandrew",
+        genre: "Coding Rock",
+        song_rating: 99
+      };
+      let testPlaylist;
+      database('playlists').first()
+        .then(playlist => { testPlaylist = Object.assign(playlist)} );
+      database('songs').insert(newSongParams, 'id')
+        .then(newSongId => {
+          chai.request(server)
+          .post(`/api/v1/playlists/${testPlaylist.id}/songs/${newSongId[0]}`)
+          .end((err, response) => {
+            response.should.have.status(201);
+            response.body.message.should.equal(`Successfully added ${newSongParams.name} to playlist: ${testPlaylist.playlist_name}`);
+            database('playlist_songs').select('*').orderBy('created_at desc').limit(1)
+            .then(playlistSongEntry => {
+              playlistSongEntry.playlist_id.should.equal(testPlaylist.id);
+              playlistSongEntry.song_id.should.equal(newSong.id);
+            });
+            done();
+          });
+        });
 
   describe('POST /api/v1/playlists', () => {
     it('creates a new playlist', done => {

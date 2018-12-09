@@ -171,6 +171,54 @@ app.get('/api/v1/playlists/:id/songs', (request, response) => {
   });
 });
 
+app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
+  let targetSong;
+  let targetPlaylist;
+
+  Promise.all([database('songs').select('id', 'name').where('id', request.params.id)
+    .then(song => {
+      if (song.length) {
+        targetSong = song[0];
+      } else {
+        response.status(404).json({
+          message: `Could not find song.`
+        });
+      };
+    })
+    .catch(error => ({ error })),
+
+  database('playlists').select('id', 'playlist_name').where('id', request.params.playlist_id)
+    .then(playlist => {
+      if(playlist.length) {
+        targetPlaylist = playlist[0];
+      } else {
+        response.status(404).json({
+          message: `Could not find playlist.`
+        });
+      };
+    })
+    .catch(error => ({ error }))])
+  .then(() => {
+    if (targetSong && targetPlaylist) {
+      let newPlaylistSong = {
+        playlist_id: targetPlaylist.id,
+        song_id: targetSong.id
+      };
+      database('playlist_songs').insert(newPlaylistSong)
+        .then(() => {
+          response.status(201).json({
+            message: `Successfully added ${targetSong.name} to playlist: ${targetPlaylist.playlist_name}`
+          });
+        })
+        .catch(error => { error });
+    } else {
+      response.status(400).json({
+        error: 'Something didn\'t go right, please try again.'
+      });
+    };
+  });
+});
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
 });
