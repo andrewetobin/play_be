@@ -41,6 +41,7 @@ app.get('/api/v1/songs/:id', (request, response) => {
       response.status(500).json({ error });
     });
 });
+
 app.post('/api/v1/songs', (request, response) => {
   const song = request.body;
   const requiredParameter = ['name', 'artist_name', 'genre', 'song_rating'];
@@ -111,7 +112,6 @@ app.delete('/api/v1/songs/:id', (request, response) => {
   });
 });
 
-
 app.get('/api/v1/playlists', (request, response) => {
   let playlists = [];
   let songs = [];
@@ -119,9 +119,6 @@ app.get('/api/v1/playlists', (request, response) => {
   .then((allPlaylists) => {
     playlists = allPlaylists
   });
-  database('songs')
-  .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
-  .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')
   database('songs')
   .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
   .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')
