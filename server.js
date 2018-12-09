@@ -35,7 +35,7 @@ app.get('/api/v1/songs/:id', (request, response) => {
         response.status(400).json({
           error: `Could not find song with id: ${song_id}`
         });
-      }
+      };
     })
     .catch((error) => {
       response.status(500).json({ error });
@@ -50,14 +50,14 @@ app.post('/api/v1/songs', (request, response) => {
       return response
         .status(400)
         .send({ error: `Expected format: { name: <String>, artist_name: <String>, genre: <String>, song_rating: <Integer> }. You're missing a "${parameter}" property.` });
-    }
-  }
+    };
+  };
 
   if ((song['song_rating'] > 100) || (song['song_rating'] < 1)) {
     return response
       .status(400)
       .send( {error: `Song Rating: ${song['song_rating']} is invalid. Song rating must be an integer between 1 and 100.` } );
-  }
+  };
 
   database('songs').insert(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
     .then(song => {
@@ -79,8 +79,8 @@ app.patch('/api/v1/songs/:id', (request, response) => {
         .status(400)
         .send({ error: `Expected format: { name: <String>, artist_name: <String>, genre: <String>, song_rating: <Integer> }.
           You're missing a "${requiredParameter}" property.`});
-    }
-  }
+    };
+  };
 
   database('songs').where('id', songId).update(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
     .then(song => {
@@ -97,7 +97,7 @@ app.get('/api/v1/playlists', (request, response) => {
   database('playlists').select(['playlists.id', 'playlists.playlist_name'])
   .then((allPlaylists) => {
     playlists = allPlaylists
-  })
+  });
   database('songs')
   .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
   .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')

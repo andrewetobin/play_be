@@ -195,12 +195,12 @@ describe('API Routes', () => {
   });
   describe('GET /api/v1/playlists/:id/songs', () => {
     it('should return all songs in a specific playlist', done => {
+      database('playlists ')
       chai.request(server)
-      .get('/api/v1/playlists/17/songs')
+      .get('/api/v1/playlists/19/songs')
       .end((error, response) => {
         response.should.have.status(200);
         response.should.be.json;
-        console.log(response.body.songs)
         response.body.playlist_name.should.equal("Workout Songs");
         response.body.songs.length.should.equal(2);
         response.body.songs[1].name.should.equal("Another One Bites the Dust");
@@ -213,5 +213,16 @@ describe('API Routes', () => {
         done();
       });
     });
+  });
+  it('should return 404 if given invalid playlist', () => {
+    chai.request(server)
+    .get('/api/v1/playlists/123/songs')
+    .end((error, response) => {
+      response.should.have.status(404);
+      response.should.be.json;
+      response.should.be.a('Object');
+      response.should.have.property('error');
+      response.body.error.should.equal('Playlist with ID: 123 does not exist');
+    })
   });
 });
