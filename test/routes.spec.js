@@ -42,9 +42,10 @@ describe('API Routes', () => {
           response.body[0].should.have.property('genre');
           response.body[0].should.have.property('song_rating');
           done()
-        })
-    })
-  })
+        });
+    });
+  });
+
   describe('/api/v1/songs/:id', () => {
     it('responds to /api/v1/songs/:id', done => {
       database('songs').select('*').then(data => resolve(data))
@@ -57,18 +58,20 @@ describe('API Routes', () => {
           response.body[0].name.should.equal(song[0].name)
           response.body[0].artist_name.should.equal(song[0].artist_name)
           done();
-        })
-      }
-    })
+        });
+      };
+    });
+
     it('responds 400 when song not found', done => {
       chai.request(server)
       .get(`/api/v1/songs/1`)
       .end((error, response) => {
         response.should.have.status(400);
         done();
-      })
-    })
-  })
+      });
+    });
+  });
+
   describe('POST /api/v1/songs', () => {
     it('should create a new song', done => {
       chai.request(server)
@@ -90,6 +93,7 @@ describe('API Routes', () => {
           done();
       });
     });
+
     it('should not create a song with rating above range', done => {
       chai.request(server)
         .post('/api/v1/songs')
@@ -106,6 +110,7 @@ describe('API Routes', () => {
           done();
       });
     });
+
     it('should not create a song with rating below range', done => {
       chai.request(server)
         .post('/api/v1/songs')
@@ -122,6 +127,7 @@ describe('API Routes', () => {
           done();
       });
     });
+
     it('should not create a song with missing parameter', done => {
       chai.request(server)
         .post('/api/v1/songs')
@@ -137,17 +143,14 @@ describe('API Routes', () => {
           done();
       });
     });
-
+  });
 
   describe('PATCH /api/v1/songs/:id', () => {
     it('should edit the given song', (done) => {
       let testSongName;
       let testSongArtist;
-      database('songs').select().where('artist_name', 'Queen' ).limit(1)
-        .then(song => updateSong(song))
-
-
-      const updateSong = (song) => {
+      database('songs').select().where('artist_name', 'Queen').limit(1)
+        .then(song => {
         testSongName = song[0].name;
         testSongArtist = song[0].artist_name;
         chai.request(server)
@@ -160,19 +163,52 @@ describe('API Routes', () => {
           })
           .end((err, response) => {
             response.should.have.status(201);
-            response.body.should.be.a(Object);
+            response.body.should.be.a('object');
             response.body.should.have.property('songs');
-            response.body[0].should.have.property('name').eql('New Song');
-            response.body[0].should.have.property('artist_name').eql('Queen');
-          })
+            response.body.songs.should.have.property('name').eql('New Song');
+            response.body.songs.should.have.property('artist_name').eql('Queen');
+          });
           done();
-        };
+        });
       });
+    });
+
+
+  describe('DELETE /api/v1/songs/:id', () => {
+    it('should successfully delete specified song', done => {
+      database('songs').select('*')
+        .then(songs => {
+          const lengthBeforeDelete = songs.length;
+          const song = songs[0];
+          chai.request(server)
+            .delete(`/api/v1/songs/${song.id}`)
+            .end((err, response) => {
+              response.should.have.status(204);
+          database('songs').select('*')
+            .then(updatedSongs => {
+              updatedSongs.length.should.equal(lengthBeforeDelete - 1);
+            });
+          });
+          done();
+        });
+    });
+
+    it('should return 404 if song not in db', done => {
+      let testSongId;
+      database('songs').first('id')
+        .then(song => {
+          chai.request(server)
+            .delete(`/api/v1/songs/${song.id + 3}`)
+            .end((err, response) => {
+              response.should.have.status(404);
+        });
+      });
+      done();
     });
   });
 
   describe('/api/v1/playlists', () => {
-    xit("getting response from api/v1/playlists", done => {
+    it("getting response from api/v1/playlists", done => {
       chai.request(server)
         .get("/api/v1/playlists")
         .end((err, response) => {
@@ -189,9 +225,8 @@ describe('API Routes', () => {
           response.body[0].songs[0].should.have.property('artist_name');
           response.body[0].songs[0].should.have.property('genre');
           response.body[0].songs[0].should.have.property('song_rating');
-        })
+        });
         done();
-    })
-  })
-})
-
+    });
+  });
+});
