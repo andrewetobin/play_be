@@ -172,47 +172,46 @@ describe('API Routes', () => {
   });
 
   describe('/api/v1/playlists', () => {
-    xit("getting response from api/v1/playlists", done => {
+    it("getting response from api/v1/playlists", done => {
       chai.request(server)
-        .get("/api/v1/playlists")
-        .end((err, response) => {
-          console.log(response.body);
-          response.should.have.status(200);
-          response.should.be.json;
-          response.body[0].playlist_name.should.equal("Workout Songs");
-          response.body[0].songs[0].name.should.equal("Bohemian Rhapsody");
-          response.body[0].songs[0].artist_name.should.equal("Queen");
-          response.body[0].songs[0].genre.should.equal("Rock");
-          response.body[0].songs[0].song_rating.should.equal(100);
-          response.body[0].songs[1].name.should.equal("Another One Bites the Dust");
-          response.body[1].playlist_name.should.equal("Wedding Songs");
-          response.body[0].songs[0].should.have.property('name');
-          response.body[0].songs[0].should.have.property('artist_name');
-          response.body[0].songs[0].should.have.property('genre');
-          response.body[0].songs[0].should.have.property('song_rating');
-        });
+      .get("/api/v1/playlists")
+      .end((err, response) => {
+        response.should.have.status(200);
+        response.should.be.json;
+        response.body[0].playlist_name.should.equal("Workout Songs");
+        response.body[0].songs[0].name.should.equal("Bohemian Rhapsody");
+        response.body[0].songs[0].artist_name.should.equal("Queen");
+        response.body[0].songs[0].genre.should.equal("Rock");
+        response.body[0].songs[0].song_rating.should.equal(100);
+        response.body[0].songs[1].name.should.equal("Another One Bites the Dust");
+        response.body[1].playlist_name.should.equal("Wedding Songs");
+        response.body[0].songs[0].should.have.property('name');
+        response.body[0].songs[0].should.have.property('artist_name');
+        response.body[0].songs[0].should.have.property('genre');
+        response.body[0].songs[0].should.have.property('song_rating');
         done();
+      });
     });
   });
-  describe('/api/v1/playlists/:playlist_id/songs', () => {
-    it("getting response from /api/v1/playlists/:playlist_id/songs", done => {
-      database('playlists').select('*').then(data => resolve(data))
-      function resolve(playlist){
-        chai.request(server)
-        .get(`/api/v1/playlists/${playlist[0].id}/songs`)
-        .end((err, response) => {
-          response.should.have.status(200);
-          response.should.be.json;
-          response.body[0].playlist_name.should.equal("Workout Songs");
-          response.body[0].songs.length.should.equal(2);
-          response.body[0].songs[1].name.should.equal("Another One Bites the Dust");
-          response.body[0].songs[1].should.have.property('name');
-          response.body[0].songs[1].should.have.property('artist_name');
-          response.body[0].songs[1].should.have.property('genre');
-          response.body[0].songs[1].should.have.property('song_rating');
-          done();
-        });
-      };
-    })
+  describe('GET /api/v1/playlists/:id/songs', () => {
+    it('should return all songs in a specific playlist', done => {
+      chai.request(server)
+      .get('/api/v1/playlists/17/songs')
+      .end((error, response) => {
+        response.should.have.status(200);
+        response.should.be.json;
+        console.log(response.body.songs)
+        response.body.playlist_name.should.equal("Workout Songs");
+        response.body.songs.length.should.equal(2);
+        response.body.songs[1].name.should.equal("Another One Bites the Dust");
+        response.body.songs[1].should.have.property('name');
+        response.body.songs[1].should.have.property('artist_name');
+        response.body.songs[1].should.have.property('genre');
+        response.body.songs[1].should.have.property('song_rating');
+        response.body.should.have.property('playlist_name');
+        response.body.should.have.property('songs');
+        done();
+      });
+    });
   });
 });

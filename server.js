@@ -101,36 +101,39 @@ app.get('/api/v1/playlists', (request, response) => {
   database('songs')
   .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
   .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')
+  database('songs')
+  .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
+  .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')
   .then((allSongs) => {
     songs = allSongs;
-    addSongsToPlaylists(songs, playlists);
+    for(let playlist of playlists) {
+      playlist.songs = songs.filter(song => (song.playlist_id == playlist.id))
+      playlist.songs.forEach(song => delete song.playlist_id)
+    }
   })
   .then(() => {response.status(200).json(playlists)})
   .catch((error) => {
     response.status(500).json({ error });
   });
 });
+app.get('/api/v1/playlists/:id/songs', (request, response) => {
+  let playlistResponse;
+  let playlistId = request.params.id;
 
-app.get('/api/v1/playlists/:playlist_id/songs', (request, response) => {
-  let playlistId = request.params.playlist_id
-  let playlists = []
-  let songs = []
-  database('playlists').select(['playlists.id', 'playlists.playlist_name'])
-  .where('playlists.id', playlistId)
-  .then((foundPlaylist) => {
-    playlists = foundPlaylist
-  })
-
-  database("songs")
-  .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
-  .join("playlist_songs", 'songs.id', '=', 'playlist_songs.song_id')
-  .then((allSongs) => {
-    songs = allSongs;
-    addSongsToPlaylists(songs, playlists);
-  })
-  .then(() => {response.status(200).json(playlists)})
-  .catch((error) => {
-    response.status(500).json({ error });
+  database('playlists').where('id', playlistId).select(['id', 'playlist_name'])
+  .then(playlists => {
+    if(playlists.length) {
+      playlistResponse = playlists[0];
+      database('playlist_songs').where('playlist_id', playlistId)
+        .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating'])
+        .join('songs', {'songs.id': 'playlist_songs.song_id'})
+        .then(songs => {
+          playlistResponse["songs"] = songs;
+          response.status(200).json(playlistResponse);
+        });
+    } else {
+      response.status(404).json({ error: `Playlist with ID: ${playlistId} does not exist` });
+    };
   });
 });
 
@@ -139,10 +142,3 @@ app.listen(app.get('port'), () => {
 });
 
 module.exports = app;
-
-const addSongsToPlaylists = (songs, playlists) => {
-  for(let playlist of playlists) {
-    playlist.songs = songs.filter(song => (song.playlist_id == playlist.id))
-    playlist.songs.forEach(song => delete song.playlist_id)
-  };
-};
