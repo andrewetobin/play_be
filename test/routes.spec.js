@@ -265,4 +265,40 @@ describe('API Routes', () => {
       done();
     })
   });
+
+
+  describe('POST /api/v1/playlists', () => {
+    it('creates a new playlist', done => {
+      chai.request(server)
+      .post('/api/v1/playlists')
+      .send({
+        playlist_name: 'Best Ever Mix'
+      })
+      .end((err, response) => {
+        response.should.have.status(201);
+        response.should.have.be.json;
+        response.body.should.be.a('object');
+        response.body.should.have.property('playlist');
+        response.body['playlist'].should.have.property('id');
+        response.body['playlist'].should.have.property('playlist_name');
+        response.body['playlist']['playlist_name'].should.equal('Best Ever Mix');
+        done();
+      });
+    });
+    it('doesnt create playlist if field is empty', done => {
+      chai.request(server)
+      .post('/api/v1/playlists')
+      .send({
+        playlist_name: ''
+      })
+      .end((err, response) => {
+        response.should.have.status(400);
+        response.should.have.be.json;
+        response.body.should.be.a('object');
+        response.body.should.have.property('error');
+        response.body.error.should.equal('Expected format: { playlist_name: <String> }.');
+        done();
+      });
+    });
+  });
 });
