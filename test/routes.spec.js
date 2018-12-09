@@ -254,6 +254,7 @@ describe('API Routes', () => {
       };
     });
   });
+
   it('should return 404 if given invalid playlist', (done) => {
     chai.request(server)
     .get('/api/v1/playlists/123/songs')
@@ -285,14 +286,17 @@ describe('API Routes', () => {
           .end((err, response) => {
             response.should.have.status(201);
             response.body.message.should.equal(`Successfully added ${newSongParams.name} to playlist: ${testPlaylist.playlist_name}`);
-            database('playlist_songs').select('*').orderBy('created_at desc').limit(1)
+            database('playlist_songs').select('*').orderBy('created_at', 'desc').limit(1)
             .then(playlistSongEntry => {
-              playlistSongEntry.playlist_id.should.equal(testPlaylist.id);
-              playlistSongEntry.song_id.should.equal(newSong.id);
+              playlistSongEntry[0].playlist_id.should.equal(testPlaylist.id);
+              playlistSongEntry[0].song_id.should.equal(newSong.id);
             });
             done();
           });
         });
+      });
+    });
+
 
   describe('POST /api/v1/playlists', () => {
     it('creates a new playlist', done => {
