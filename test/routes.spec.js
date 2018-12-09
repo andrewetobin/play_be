@@ -170,7 +170,7 @@ describe('API Routes', () => {
   });
 
   describe('/api/v1/playlists', () => {
-    it("getting response from api/v1/playlists", done => {
+    it('should return the specified playlist', done => {
       chai.request(server)
       .get("/api/v1/playlists")
       .end((err, response) => {
