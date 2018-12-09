@@ -289,7 +289,7 @@ describe('API Routes', () => {
             database('playlist_songs').select('*').orderBy('created_at', 'desc').limit(1)
             .then(playlistSongEntry => {
               playlistSongEntry[0].playlist_id.should.equal(testPlaylist.id);
-              playlistSongEntry[0].song_id.should.equal(newSong.id);
+              playlistSongEntry[0].song_id.should.equal(newSongId[0]);
             });
             done();
           });
