@@ -11,6 +11,7 @@ Visit the deployed API here: https://play-be.herokuapp.com/
   - Build out front end
 
 **Front End**
+
   Visit the front end github repo here: https://github.com/KathleenYruegas/play_fe
 
   Visit the front end deployed site here: https://play-project.herokuapp.com/
@@ -25,7 +26,7 @@ Visit the deployed API here: https://play-be.herokuapp.com/
 - run `npm install`
 - Run `npm start` to spin up the server
 
-##Endpoints
+## Endpoints
 
 **GET `/api/v1/favorites`**
  - This will provide a list of all songs the user has added as a favorite. A song is not stored in the database until it is favorited.
@@ -50,7 +51,7 @@ Example Response:
 ]
 ```
 
-**Get `/api/v1/songs/:id`**
+**GET `/api/v1/songs/:id`**
 - Provides data for a specific song.
 Example Response:
 ```json
@@ -65,7 +66,7 @@ Example Response:
 ]
 ```
 
-**POST `/api/v1/songs/`**
+**POST `/api/v1/songs`**
 - Adds a song to the database as a user favorite.
 
 Expected Request Format:
@@ -93,7 +94,9 @@ Example Response:
     }
   }
 ]
-*Error*
+```
+
+*An error will produce:*
 - The post request will error if one of the parameters are missing of if the song rating is outside of the range (0, 100).
 ```json
 {
@@ -193,7 +196,7 @@ Example Response:
   }
 ]
 ```
-*Error*
+*An Error Will Produce:*
 - If `playlist_name` is missing:
 ```json
 {
@@ -237,8 +240,7 @@ Successful Response:
     "message": "Successfully added Bohemian Rhapsody to playlist: Wedding Songs"
 }
 ```
-Error:
-`status: 404`
+An error will produce `status: 404`
 
 **DELETE `/api/v1/playlists/:playlist_id/songs/:id`**
 - Removes the song from the playlist. Song and playlist both persist in database.
@@ -248,5 +250,4 @@ Successful Response:
     "message": "Successfully removed Another One Bites the Dust from playlist: Workout Songs."
 }
 ```
-Error:
-`status: 400```
+An error will produce `status: 400`
