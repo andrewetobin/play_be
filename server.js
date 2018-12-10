@@ -1,5 +1,7 @@
 const pry = require('pryjs')
 
+const Song = require('./lib/models/song.js')
+const Playlist = require('./lib/models/playlist.js')
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -14,20 +16,18 @@ app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Songs';
 
 app.get('/api/v1/favorites', (request, response) => {
-  database('songs').select('id', 'name', 'artist_name', 'genre', 'song_rating')
-    .then((songs) => {
-      response.status(200).json(songs);
-    })
-    .catch((error) => {
-      response.status(500).json({ error });
-    });
+  Song.all()
+  .then((songs) => {
+    response.status(200).json(songs);
+  })
+  .catch((error) => {
+    response.status(500).json({ error });
+  });
 });
 
 app.get('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
-  database('songs')
-    .select('id', 'name', 'artist_name', 'genre', 'song_rating')
-    .where('id', songId)
+  Song.show(songId)
     .then((song) => {
       if (song.length) {
         response.status(200).json(song);
@@ -60,7 +60,7 @@ app.post('/api/v1/songs', (request, response) => {
       .send( {error: `Song Rating: ${song['song_rating']} is invalid. Song rating must be an integer between 1 and 100.` } );
   };
 
-  database('songs').insert(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
+  Song.add(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
     .then(song => {
       response.status(201).json({ songs: song[0] })
     })
@@ -83,7 +83,7 @@ app.patch('/api/v1/songs/:id', (request, response) => {
     };
   };
 
-  database('songs').where('id', songId).update(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
+  Song.edit(songId, song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
     .then(song => {
       response.status(201).json({ songs: song[0] });
     })
@@ -95,10 +95,10 @@ app.patch('/api/v1/songs/:id', (request, response) => {
 app.delete('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
 
-  database('songs').pluck('id')
+  Song.allIds()
     .then(idSet => {
       if (idSet.includes(parseInt(songId))) {
-        database('songs').where('id', songId).del()
+        Song.remove(songId)
           .then(() => {
             response.status(204).json({success: 'Song has been deleted.'})
           })
@@ -115,13 +115,11 @@ app.delete('/api/v1/songs/:id', (request, response) => {
 app.get('/api/v1/playlists', (request, response) => {
   let playlists = [];
   let songs = [];
-  database('playlists').select(['playlists.id', 'playlists.playlist_name'])
+  Playlist.all()
   .then((allPlaylists) => {
     playlists = allPlaylists
   });
-  database('songs')
-  .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
-  .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')
+  Playlist.linkAllSongs()
   .then((allSongs) => {
     songs = allSongs;
     for(let playlist of playlists) {
@@ -144,7 +142,7 @@ app.post('/api/v1/playlists', (request, response) => {
       .send({ error: `Expected format: { playlist_name: <String> }.` });
   }
 
-  database('playlists').insert(newPlaylist, ['id', 'playlist_name'])
+  Playlist.add(newPlaylist, ['id', 'playlist_name'])
     .then(addedPlaylist => {
       response.status(201).json({ playlist: addedPlaylist[0] })
     });
@@ -154,13 +152,11 @@ app.get('/api/v1/playlists/:id/songs', (request, response) => {
   let playlistResponse;
   let playlistId = request.params.id;
 
-  database('playlists').where('id', playlistId).select(['id', 'playlist_name'])
+  Playlist.show(playlistId)
   .then(playlists => {
     if(playlists.length) {
       playlistResponse = playlists[0];
-      database('playlist_songs').where('playlist_id', playlistId)
-        .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating'])
-        .join('songs', {'songs.id': 'playlist_songs.song_id'})
+      Playlist.linkSongs(playlistId)
         .then(songs => {
           playlistResponse["songs"] = songs;
           response.status(200).json(playlistResponse);
@@ -175,7 +171,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let targetSong;
   let targetPlaylist;
 
-  Promise.all([database('songs').select('id', 'name').where('id', request.params.id)
+  Promise.all([Song.show(request.params.id)
     .then(song => {
       if (song.length) {
         targetSong = song[0];
@@ -187,7 +183,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
     })
     .catch(error => ({ error })),
 
-  database('playlists').select('id', 'playlist_name').where('id', request.params.playlist_id)
+  Playlist.show(request.params.playlist_id)
     .then(playlist => {
       if(playlist.length) {
         targetPlaylist = playlist[0];
@@ -204,7 +200,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
         playlist_id: targetPlaylist.id,
         song_id: targetSong.id
       };
-      database('playlist_songs').insert(newPlaylistSong)
+      Playlist.addSong(newPlaylistSong)
         .then(() => {
           response.status(201).json({
             message: `Successfully added ${targetSong.name} to playlist: ${targetPlaylist.playlist_name}`
@@ -223,17 +219,14 @@ app.delete('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let targetSong;
   let targetPlaylist;
 
-  Promise.all([database('songs').select('id', 'name').where('id', request.params.id)
+  Promise.all([Song.show(request.params.id)
   .then(song => { targetSong = song[0] }),
 
-  database('playlists').select('id', 'playlist_name').where('id', request.params.playlist_id)
+  Playlist.show(request.params.playlist_id)
   .then(playlist => { targetPlaylist = playlist[0] })
   ])
   .then(() => {
-    database('playlist_songs').del().where({
-    playlist_id: targetPlaylist.id,
-    song_id: targetSong.id
-    })
+    Playlist.remove(targetSong, targetPlaylist)
     .then(() => {
       response.status(201).json({
         message: `Successfully removed ${targetSong.name} from playlist: ${targetPlaylist.playlist_name}.`
