@@ -219,17 +219,14 @@ app.delete('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let targetSong;
   let targetPlaylist;
 
-  Promise.all([database('songs').select('id', 'name').where('id', request.params.id)
+  Promise.all([Song.show(request.params.id)
   .then(song => { targetSong = song[0] }),
 
-  database('playlists').select('id', 'playlist_name').where('id', request.params.playlist_id)
+  Playlist.show(request.params.playlist_id)
   .then(playlist => { targetPlaylist = playlist[0] })
   ])
   .then(() => {
-    database('playlist_songs').del().where({
-    playlist_id: targetPlaylist.id,
-    song_id: targetSong.id
-    })
+    Playlist.remove(targetSong, targetPlaylist)
     .then(() => {
       response.status(201).json({
         message: `Successfully removed ${targetSong.name} from playlist: ${targetPlaylist.playlist_name}.`
