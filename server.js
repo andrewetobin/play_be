@@ -142,7 +142,7 @@ app.post('/api/v1/playlists', (request, response) => {
       .send({ error: `Expected format: { playlist_name: <String> }.` });
   }
 
-  database('playlists').insert(newPlaylist, ['id', 'playlist_name'])
+  Playlist.add(newPlaylist, ['id', 'playlist_name'])
     .then(addedPlaylist => {
       response.status(201).json({ playlist: addedPlaylist[0] })
     });
