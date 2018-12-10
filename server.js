@@ -82,7 +82,7 @@ app.patch('/api/v1/songs/:id', (request, response) => {
     };
   };
 
-  database('songs').where('id', songId).update(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
+  Song.edit(songId, song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
     .then(song => {
       response.status(201).json({ songs: song[0] });
     })
