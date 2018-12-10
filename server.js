@@ -171,7 +171,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
   let targetSong;
   let targetPlaylist;
 
-  Promise.all([database('songs').select('id', 'name').where('id', request.params.id)
+  Promise.all([Song.show(request.params.id)
     .then(song => {
       if (song.length) {
         targetSong = song[0];
@@ -183,7 +183,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
     })
     .catch(error => ({ error })),
 
-  database('playlists').select('id', 'playlist_name').where('id', request.params.playlist_id)
+  Playlist.show(request.params.playlist_id)
     .then(playlist => {
       if(playlist.length) {
         targetPlaylist = playlist[0];
@@ -200,7 +200,7 @@ app.post('/api/v1/playlists/:playlist_id/songs/:id', (request, response) => {
         playlist_id: targetPlaylist.id,
         song_id: targetSong.id
       };
-      database('playlist_songs').insert(newPlaylistSong)
+      Playlist.addSong(newPlaylistSong)
         .then(() => {
           response.status(201).json({
             message: `Successfully added ${targetSong.name} to playlist: ${targetPlaylist.playlist_name}`
