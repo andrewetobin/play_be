@@ -1,5 +1,6 @@
 const pry = require('pryjs')
 
+const Song = require('./lib/models/song.js')
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -14,13 +15,13 @@ app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Songs';
 
 app.get('/api/v1/favorites', (request, response) => {
-  database('songs').select('id', 'name', 'artist_name', 'genre', 'song_rating')
-    .then((songs) => {
-      response.status(200).json(songs);
-    })
-    .catch((error) => {
-      response.status(500).json({ error });
-    });
+  Song.all()
+  .then((songs) => {
+    response.status(200).json(songs);
+  })
+  .catch((error) => {
+    response.status(500).json({ error });
+  });
 });
 
 app.get('/api/v1/songs/:id', (request, response) => {
