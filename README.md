@@ -132,7 +132,7 @@ Example Response:
   }
 ]
 ```
-*Error*
+*An error will produce:*
 - The patch request requires all parameters to be present.
 Example Error:
 ```json
