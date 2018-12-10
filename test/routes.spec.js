@@ -289,7 +289,7 @@ describe('API Routes', () => {
             database('playlist_songs').select('*').orderBy('created_at', 'desc').limit(1)
             .then(playlistSongEntry => {
               playlistSongEntry[0].playlist_id.should.equal(testPlaylist.id);
-              playlistSongEntry[0].song_id.should.equal(newSong.id);
+              playlistSongEntry[0].song_id.should.equal(newSongId[0]);
             });
             done();
           });
@@ -330,6 +330,46 @@ describe('API Routes', () => {
         response.body.error.should.equal('Expected format: { playlist_name: <String> }.');
         done();
       });
+    });
+  });
+
+  describe('DELETE /api/v1/playlists/:playlist_id/songs/:id', () => {
+    it('should delete song from playlist', done => {
+      let testSongId;
+      let testPlaylistId;
+      let testSong;
+      let testPlaylist;
+      let songLengthBefore;
+
+      database('songs').select()
+      .then(songs => { songLengthBefore = songs.length })
+
+      database('playlist_songs').select('*').first()
+        .then(playlistSong => {
+          testSongId = playlistSong.song_id;
+          testPlaylistId = playlistSong.playlist_id;
+        })
+        .then(() => {
+          database('songs').select('name').where('id', testSongId)
+          .then(song => {testSong = song[0]})
+        })
+        .then(() => {
+          database('playlists').select('playlist_name').where('id', testPlaylistId)
+          .then(playlist => {testPlaylist = playlist[0]})
+        })
+        .then(() => {
+          chai.request(server)
+          .delete(`/api/v1/playlists/${testPlaylistId}/songs/${testSongId}`)
+          .end((err, response) => {
+            response.should.have.status(201);
+            response.body.message.should.equal(`Successfully removed ${testSong.name} from playlist: ${testPlaylist.playlist_name}.`)
+            database('songs').select()
+            .then(songs => {
+              songs.length.should.equal(songLengthBefore)
+            });
+            done();
+          });
+        });
     });
   });
 });
