@@ -94,10 +94,10 @@ app.patch('/api/v1/songs/:id', (request, response) => {
 app.delete('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
 
-  database('songs').pluck('id')
+  Song.allIds()
     .then(idSet => {
       if (idSet.includes(parseInt(songId))) {
-        database('songs').where('id', songId).del()
+        Song.remove(songId)
           .then(() => {
             response.status(204).json({success: 'Song has been deleted.'})
           })
