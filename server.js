@@ -119,7 +119,7 @@ app.get('/api/v1/playlists', (request, response) => {
   .then((allPlaylists) => {
     playlists = allPlaylists
   });
-  Playlist.linkSongs()
+  Playlist.linkAllSongs()
   .then((allSongs) => {
     songs = allSongs;
     for(let playlist of playlists) {
@@ -152,13 +152,11 @@ app.get('/api/v1/playlists/:id/songs', (request, response) => {
   let playlistResponse;
   let playlistId = request.params.id;
 
-  database('playlists').where('id', playlistId).select(['id', 'playlist_name'])
+  Playlist.show(playlistId)
   .then(playlists => {
     if(playlists.length) {
       playlistResponse = playlists[0];
-      database('playlist_songs').where('playlist_id', playlistId)
-        .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating'])
-        .join('songs', {'songs.id': 'playlist_songs.song_id'})
+      Playlist.linkSongs(playlistId)
         .then(songs => {
           playlistResponse["songs"] = songs;
           response.status(200).json(playlistResponse);
