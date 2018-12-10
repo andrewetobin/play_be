@@ -59,7 +59,7 @@ app.post('/api/v1/songs', (request, response) => {
       .send( {error: `Song Rating: ${song['song_rating']} is invalid. Song rating must be an integer between 1 and 100.` } );
   };
 
-  database('songs').insert(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
+  Song.add(song, ['id', 'name', 'artist_name', 'genre', 'song_rating'])
     .then(song => {
       response.status(201).json({ songs: song[0] })
     })
