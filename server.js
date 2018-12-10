@@ -1,6 +1,7 @@
 const pry = require('pryjs')
 
 const Song = require('./lib/models/song.js')
+const Playlist = require('./lib/models/playlist.js')
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -114,13 +115,11 @@ app.delete('/api/v1/songs/:id', (request, response) => {
 app.get('/api/v1/playlists', (request, response) => {
   let playlists = [];
   let songs = [];
-  database('playlists').select(['playlists.id', 'playlists.playlist_name'])
+  Playlist.all()
   .then((allPlaylists) => {
     playlists = allPlaylists
   });
-  database('songs')
-  .select(['songs.id', 'name', 'artist_name', 'genre', 'song_rating', 'playlist_songs.playlist_id'])
-  .join('playlist_songs', 'songs.id', 'playlist_songs.song_id')
+  Playlist.linkSongs()
   .then((allSongs) => {
     songs = allSongs;
     for(let playlist of playlists) {

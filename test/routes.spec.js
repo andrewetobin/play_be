@@ -209,8 +209,8 @@ describe('API Routes', () => {
     });
   });
 
-  describe('/api/v1/playlists', () => {
-    it('should return the specified playlist', done => {
+  describe('get /api/v1/playlists', () => {
+    it('should return all the playlists', done => {
       chai.request(server)
       .get("/api/v1/playlists")
       .end((err, response) => {
