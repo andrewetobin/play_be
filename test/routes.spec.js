@@ -339,6 +339,11 @@ describe('API Routes', () => {
       let testPlaylistId;
       let testSong;
       let testPlaylist;
+      let songLengthBefore;
+
+      database('songs').select()
+      .then(songs => { songLengthBefore = songs.length })
+
       database('playlist_songs').select('*').first()
         .then(playlistSong => {
           testSongId = playlistSong.song_id;
@@ -346,11 +351,11 @@ describe('API Routes', () => {
         })
         .then(() => {
           database('songs').select('name').where('id', testSongId)
-          .then(song => {testSong = song})
+          .then(song => {testSong = song[0]})
         })
         .then(() => {
           database('playlists').select('playlist_name').where('id', testPlaylistId)
-          .then(playlist => {testPlaylist = playlist})
+          .then(playlist => {testPlaylist = playlist[0]})
         })
         .then(() => {
           chai.request(server)
@@ -358,6 +363,10 @@ describe('API Routes', () => {
           .end((err, response) => {
             response.should.have.status(201);
             response.body.message.should.equal(`Successfully removed ${testSong.name} from playlist: ${testPlaylist.playlist_name}.`)
+            database('songs').select()
+            .then(songs => {
+              songs.length.should.equal(songLengthBefore)
+            });
             done();
           });
         });
