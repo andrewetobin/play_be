@@ -26,9 +26,7 @@ app.get('/api/v1/favorites', (request, response) => {
 
 app.get('/api/v1/songs/:id', (request, response) => {
   const songId = request.params.id;
-  database('songs')
-    .select('id', 'name', 'artist_name', 'genre', 'song_rating')
-    .where('id', songId)
+  Song.show(songId)
     .then((song) => {
       if (song.length) {
         response.status(200).json(song);
