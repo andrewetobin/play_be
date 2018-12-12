@@ -3,6 +3,7 @@ const pry = require('pryjs')
 const Song = require('./lib/models/song.js')
 const Playlist = require('./lib/models/playlist.js')
 const express = require('express');
+const cors = require('cors')
 const app = express();
 const bodyParser = require('body-parser');
 
@@ -12,6 +13,7 @@ const database = require('knex')(configuration);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use((cors()))
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Songs';
 
