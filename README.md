@@ -29,7 +29,7 @@ Visit the deployed API here: https://play-be.herokuapp.com/
 ## Testing
 - Run the test suite with `npm test`
 - Current test report:
-<em><img href='./test_coverage.png'></em>
+<img src='./test_coverage.png'>
 
 ## Endpoints
 
